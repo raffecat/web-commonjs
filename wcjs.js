@@ -1,4 +1,4 @@
-/* github.com/raffecat/web-commonjs v1 */
+/* github.com/raffecat/web-commonjs v1 (MIT license) */
 var __cjs;__cjs=__cjs||{};function cjs_provide(n,f){__cjs[n]={f:f}}
 function require(n){var G=__cjs,p,q=[],i,s,m,r,o=G.$;s=n.charAt(0);
 if(s==='.'||s==='..')n=o+'/../'+n;p=n.split('/');for(i=0;i<p.length
