@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="wcjs.js"></script>
+    <style>
+      th { font-weight:normal; text-align:left; padding-right:1em; }
+      td span { color:#558055; }
+      td b { color:#805555; }
+    </style>
+  </head>
+  <body>
+  <table>
+    <script>
+
+      // testing framework:
+
+      function escape(s) {
+        return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+      }
+      function test(name, func) {
+        __cjs={}; // reset global modules collection.
+        document.write('<tr><th>'+escape(name)+'</th><td>');
+        try {
+          if(func()) {
+            document.write('<span>pass</span>');
+          } else {
+            document.write('<b>FAIL</b>');
+          }
+        } catch(e) {
+          document.write('<b>FAIL</b> <em>'+escape(e.toString())+'</em>');
+        }
+        document.write('</td></tr>');
+      }
+      
+      // web-commonjs tests:
+
+      test("provide a module", function(){
+        cjs_provide("m1", function(exports,require){});
+        return true;
+      });
+
+      test("globally require a module", function(){
+        cjs_provide("m1", function(exports,require){});
+        return require('m1');
+      });
+
+      test("missing module raises exception", function(){
+        try {
+          require('noSuchModule');
+        } catch (e) { return true; }
+        return false;
+      });
+
+      test("exported symbol is found", function(){
+        cjs_provide("m1", function(exports,require){ exports.foo=42; });
+        return require('m1').foo===42;
+      });
+
+      test("private symbol is not found", function(){
+        cjs_provide("m1", function(exports,require){ var bar = 42; });
+        return typeof require('m1').bar === 'undefined';
+      });
+
+      test("module can require earlier module", function(){
+        cjs_provide("m1", function(exports,require){});
+        cjs_provide("m2", function(exports,require){ require('m1') });
+        return require('m2');
+      });
+      
+      test("module can require later module", function(){
+        cjs_provide("m1", function(exports,require){ require('m2') });
+        cjs_provide("m2", function(exports,require){});
+        return require('m1');
+      });
+
+      test("import pkg/module", function(){
+        cjs_provide("std/m1", function(exports,require){});
+        return require('std/m1');
+      });
+
+      test("import pkg/sub/module", function(){
+        cjs_provide("std/foo/m1", function(exports,require){});
+        return require('std/foo/m1');
+      });
+
+      test("import pkg/module from top-level module", function(){
+        cjs_provide("std/m1", function(exports,require){});
+        cjs_provide("m2", function(exports,require){ require('std/m1'); });
+        return require('m2');
+      });
+
+      test("import pkg/module from pkg/module2", function(){
+        cjs_provide("std/m1", function(exports,require){});
+        cjs_provide("std/m2", function(exports,require){ require('std/m1'); });
+        return require('std/m2');
+      });
+
+      test("import ./module from top-level module", function(){
+        cjs_provide("m1", function(exports,require){});
+        cjs_provide("m2", function(exports,require){ require('./m1'); });
+        return require('m2');
+      });
+
+      test("import ./module from pkg/module2", function(){
+        cjs_provide("pkg/m1", function(exports,require){});
+        cjs_provide("pkg/m2", function(exports,require){ require('./m1'); });
+        return require('pkg/m2');
+      });
+
+      test("import ../module from pkg/module2", function(){
+        cjs_provide("m1", function(exports,require){});
+        cjs_provide("std/m2", function(exports,require){ require('../m1'); });
+        return require('std/m2');
+      });
+
+      test("import ../module from pkg/sub/module", function(){
+        cjs_provide("std/m1", function(exports,require){});
+        cjs_provide("std/sub/m2", function(exports,require){ require('../m1'); });
+        return require('std/sub/m2');
+      });
+
+
+      test("relative import after absolute import throws", function(){
+        cjs_provide("bad", function(exports,require){ throw "bad"; });
+        cjs_provide("std/m1", function(exports,require){});
+        cjs_provide("std/m2", function(exports,require){
+            try { require('bad'); } catch(e) {}
+            require('./m1');
+        });
+        return require('std/m2');
+      });
+
+      test("relative import after absolute sub/module import throws", function(){
+        cjs_provide("sub/bad", function(exports,require){ throw "bad"; });
+        cjs_provide("std/m1", function(exports,require){});
+        cjs_provide("std/m2", function(exports,require){
+            try { require('sub/bad'); } catch(e) {}
+            require('./m1');
+        });
+        return require('std/m2');
+      });
+
+      test("relative import after ./module import throws", function(){
+        cjs_provide("std/bad", function(exports,require){ throw "bad"; });
+        cjs_provide("std/m1", function(exports,require){});
+        cjs_provide("std/m2", function(exports,require){
+            try { require('./bad'); } catch(e) {}
+            require('./m1');
+        });
+        return require('std/m2');
+      });
+
+      test("relative import after ./sub/module import throws", function(){
+        cjs_provide("std/sub/bad", function(exports,require){ throw "bad"; });
+        cjs_provide("std/m1", function(exports,require){});
+        cjs_provide("std/m2", function(exports,require){
+            try { require('./sub/bad'); } catch(e) {}
+            require('./m1');
+        });
+        return require('std/m2');
+      });
+
+
+      test("relative import after nested absolute import throws", function(){
+        cjs_provide("bad", function(exports,require){ throw "bad"; });
+        cjs_provide("std/m1", function(exports,require){ require('bad'); });
+        cjs_provide("std/m2", function(exports,require){});
+        cjs_provide("std/m3", function(exports,require){
+            try { require('./m1'); } catch(e) {}
+            require('./m2');
+        });
+        return require('std/m3');
+      });
+
+      test("relative import after nested absolute sub/import throws", function(){
+        cjs_provide("sub/bad", function(exports,require){ throw "bad"; });
+        cjs_provide("std/m1", function(exports,require){ require('sub/bad'); });
+        cjs_provide("std/m2", function(exports,require){});
+        cjs_provide("std/m3", function(exports,require){
+            try { require('./m1'); } catch(e) {}
+            require('./m2');
+        });
+        return require('std/m3');
+      });
+
+      test("relative import after nested ./module import throws", function(){
+        cjs_provide("std/bad", function(exports,require){ throw "bad"; });
+        cjs_provide("std/m1", function(exports,require){ require('./bad'); });
+        cjs_provide("std/m2", function(exports,require){});
+        cjs_provide("std/m3", function(exports,require){
+            try { require('./m1'); } catch(e) {}
+            require('./m2');
+        });
+        return require('std/m3');
+      });
+
+      test("correct relative import after nested ./sub/module import throws", function(){
+        cjs_provide("std/sub/bad", function(exports,require){ throw "bad"; });
+        cjs_provide("std/m1", function(exports,require){ require('./sub/bad'); });
+        cjs_provide("std/m2", function(exports,require){});
+        cjs_provide("std/m3", function(exports,require){
+            try { require('./m1'); } catch(e) {}
+            require('./m2');
+        });
+        return require('std/m3');
+      });
+
+      test("error in indirectly imported module propagates to top", function(){
+        cjs_provide("bad", function(exports,require){ throw "bad"; });
+        cjs_provide("m1", function(exports,require){ require('bad'); });
+        cjs_provide("m2", function(exports,require){
+            require('m1');
+        });
+        try { require('m2'); } catch(e) { return e.toString()==="bad"; }
+        return false;
+      });
+
+    </script>
+    </table>
+  </body>
+</html>
