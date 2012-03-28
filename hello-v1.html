@@ -50,36 +50,50 @@
 
     <div id="hello"></div>
     <script>
-      /* github.com/raffecat/web-commonjs v1 (MIT license) */
-      var __cjs;__cjs=__cjs||{};function cjs_provide(n,f){__cjs[n]={f:f}}
-      function require(n){var G=__cjs,p,q=[],i,s,m,r,o=G.$;s=n.charAt(0);
-      if(s==='.'||s==='..')n=o+'/../'+n;p=n.split('/');for(i=0;i<p.length
-      ;i++)s=p[i],s!=="."&&(s===".."?q.pop():q.push(s));n=q.join("/");m=G
-      [n];if(!m)throw "Module not found: "+n;if(m.e)return m.e;try{G.$=n;
-      m.f(m.e={},require)}finally{G.$=o}return m.e;}
-      function cjs_shim(n,e){__cjs[n]={e:e}}
-      function require2(n){var S=document.getElementsByTagName('script');}
-    </script>
-    <script type="text/x-commonjs" data-module="website">
-      var $ = require('jQuery');
-      var greets = require('std/greetings');
 
-      $('#hello').css({
-        backgroundColor:'#93c3cd',padding:'1em',float:'left',color:'white'
-      }).text(greets.default_greeting);
-    </script>
-    <script type="text/x-commonjs" data-module="std/greetings">
-      var msgs = require('./messages');
-      exports.default_greeting = msgs.hello_message;
-    </script>
-    <script type="text/x-commonjs" data-module="std/messages">
-      exports.hello_message = "Hello world";
-    </script>
-    <script>
-      // provide standard jQuery as a CommonJS module.
-      cjs_shim('jQuery', $);
-      // require the website module on this page.
-      require('website');
+/* github.com/raffecat/web-commonjs v1 (MIT license) */
+var __cjs;__cjs=__cjs||{};function cjs_provide(n,f){__cjs[n]={f:f}}
+function require(n){var G=__cjs,p,q=[],i,s,m,r,o=G.$;s=n.charAt(0);
+if(s==='.'||s==='..')n=o+'/../'+n;p=n.split('/');for(i=0;i<p.length
+;i++)s=p[i],s!=="."&&(s===".."?q.pop():q.push(s));n=q.join("/");m=G
+[n];if(!m)throw "Module not found: "+n;if(m.e)return m.e;try{G.$=n;
+m.f(m.e={},require)}finally{G.$=o}return m.e;}
+function cjs_shim(n,e){__cjs[n]={e:e}}
+
+/* website.js ------------------------------------------------------------ */
+cjs_provide("website",function(exports,require){
+
+  var $ = require('jQuery');
+  var greets = require('std/greetings');
+
+  $('#hello').css({
+    backgroundColor:'#93c3cd',padding:'1em',float:'left',color:'white'
+  }).text(greets.default_greeting);
+
+});
+
+/* std/greetings.js ------------------------------------------------------ */
+cjs_provide("std/greetings",function(exports,require){
+
+  var msgs = require('./messages');
+
+  exports.default_greeting = msgs.hello_message;
+
+});
+
+/* std/messages.js ------------------------------------------------------- */
+cjs_provide("std/messages",function(exports,require){
+
+  exports.hello_message = "Hello world";
+
+});
+
+// provide standard jQuery as a CommonJS module.
+cjs_shim('jQuery', $);
+
+// require the website module on this page.
+require('website');
+
     </script>
   </body>
 </html>

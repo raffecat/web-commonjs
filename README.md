@@ -13,22 +13,25 @@ Direct embedding
 With one chunk of script at the top of your web page, you can embed CommonJS
 modules directly in your page.
 
-    /* github.com/raffecat/web-commonjs v1 (MIT license) */
+    /* github.com/raffecat/web-commonjs v2 (MIT license) */
     var __cjs;__cjs=__cjs||{};function cjs_provide(n,f){__cjs[n]={f:f}}
-    function require(n){var G=__cjs,p,q=[],i,s,m,r,o=G.$;s=n.charAt(0);
-    if(s==='.'||s==='..')n=o+'/../'+n;p=n.split('/');for(i=0;i<p.length
-    ;i++)s=p[i],s!=="."&&(s===".."?q.pop():q.push(s));n=q.join("/");m=G
-    [n];if(!m)throw "Module not found: "+n;if(m.e)return m.e;try{G.$=n;
+    function require(n){var G=__cjs,p,q=[],i,s,m,o=G.$,S,t;s=n.charAt(0);
+    if(s==='.'||s==='..')n=o+'/../'+n;p=n.split('/');for(i=0;i<p.length;
+    i++)s=p[i],s&&s!=="."&&(s===".."?q.pop():q.push(s));n=q.join("/");m=
+    G[n];if(!m){S=document.getElementsByTagName('script');for(i=0;i<S.length;
+    i++){t=S[i];if(t.getAttribute('type')==='text/x-commonjs'&&t.id===n){
+    G[n]=m={f:new Function('exports','require',t.innerText||t.textContent)};
+    break}}if(!m)throw "module not found: "+n;}if(m.e)return m.e;try{G.$=n;
     m.f(m.e={},require)}finally{G.$=o}return m.e;}
     function cjs_shim(n,e){__cjs[n]={e:e}}
 
-Then, wrap the source code for each CommonJS module in the following pair
-of lines, replacing *commonjs/module/path* with the module's path (which
-is usually just a file system path with no extension.)
+Then, wrap the source code for each CommonJS module in a script tag, replacing
+*modulePath* with the module's CommonJS path (which is usually just the file
+system path with no extension.)
 
-    cjs_provide("commonjs/module/path",function(exports,require){
+    <script type="text/x-commonjs" id="modulePath">
         ... paste the module source code here ...
-    });
+    </script>
 
 You can also inject a global object, such as jQuery's *$*, into the module
 system as follows:
