@@ -1,31 +1,60 @@
 No-fuss CommonJS modules in your web pages
 ==========================================
 
-Embed [CommonJS][1] modules directly in your web pages; dynamically load modules
+Embed [CommonJS][1] modules directly in your web pages, dynamically load modules
 from disk or server, or package your modules as a single minified script for
 deployment.
 
 [1]: http://www.commonjs.org/specs/modules/1.0/ "CommonJS Modules 1.0 Specification"
 
+
+Dynamic loading
+---------------
+
+Note: this feature **requires a web server**, because web browsers do not allow
+web pages to load content (via XMLHttpRequest) when using the file:// protocol.
+
+Include wcjs.js at the top of your web page...
+
+    <script src="wcjs.js"></script>
+
+... and include a script in your page that uses the `require` function:
+
+    <script>
+      require('example/website');
+    </script>
+
+This feature is intended for development, **not for production***, since it
+uses a _blocking_ XMLHttpRequest to load modules. For production, package your
+modules as described below.
+
+Note: the dynamic loader does not cache your scripts, since it is intended for
+development only. Your web browser _will_ cache your scripts if your web server
+tells it to; check the response headers!
+
+
+Packaged modules
+----------------
+
+This feature is not yet implemented. It will work as follows: concatenate wcjs.js
+and all modules into one file, wrapping each module source with the following:
+
+    cjs_provide('path/to/module', function(exports,require) {
+        // ... module code goes here ...
+    });
+
+Then, pass the result through a javascript minifier.
+
+
 Direct embedding
 ----------------
 
-With one chunk of script at the top of your web page, you can embed CommonJS
-modules directly in your page.
+Include wcjs.js at the top of your web page (or paste its contents into a
+script tag!) and you can embed CommonJS modules directly in your page.
 
-    /* github.com/raffecat/web-commonjs v2 (MIT license) */
-    var __cjs;__cjs=__cjs||{};function cjs_provide(n,f){__cjs[n]={f:f}}
-    function require(n){var G=__cjs,p,q=[],i,s,m,o=G.$,S,t;s=n.charAt(0);
-    if(s==='.'||s==='..')n=o+'/../'+n;p=n.split('/');for(i=0;i<p.length;
-    i++)s=p[i],s&&s!=="."&&(s===".."?q.pop():q.push(s));n=q.join("/");m=
-    G[n];if(!m){S=document.getElementsByTagName('script');for(i=0;i<S.length;
-    i++){t=S[i];if(t.getAttribute('type')==='text/x-commonjs'&&t.id===n){
-    G[n]=m={f:new Function('exports','require',t.innerText||t.textContent)};
-    break}}if(!m)throw "module not found: "+n;}if(m.e)return m.e;try{G.$=n;
-    m.f(m.e={},require)}finally{G.$=o}return m.e;}
-    function cjs_shim(n,e){__cjs[n]={e:e}}
+    <script src="wcjs.js"></script>
 
-Then, wrap the source code for each CommonJS module in a script tag, replacing
+Wrap the source code for each CommonJS module in a script tag, replacing
 *modulePath* with the module's CommonJS path (which is usually just the file
 system path with no extension.)
 
@@ -45,21 +74,16 @@ otherwise nothing will happen.
 
     require('website/mainpage');
 
-Dynamic loading
----------------
-
-This feature is not yet implemented.
-
-Packaged modules
-----------------
-
-This feature is not yet implemented.
 
 Examples
 --------
 
 The `hello.html` sample demonstrates _direct embedding_ in a web page.
 This sample can be loaded locally in a web browser using the file:/// protocol.
+
+The `hello-dynamic.html` sample demonstrates _dynamic loading_ from a web page.
+This sample requires the files to be served by a web server.
+
 
 Tests
 -----

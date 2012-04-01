@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="wcjs.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <style>
+      body {
+        font-family: Candara, Calibri, Segoe, "Segoe UI", Optima, Arial, sans-serif;
+        color: #558055;
+        max-width: 600px;
+      }
+      sup {
+        font-size: 0.6em;
+      }
+      pre {
+        border: 1px solid #999;
+        background: #eee;
+        float: left;
+        padding: 0.5em;
+        margin: 0 0 1em 2em;
+      }
+      p {
+        clear: left;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>The world's most verbose<sup>1</sup> hello world web page</h3>
+    <p>This is an example of using web-commonjs to load modules dynamically.</p>
+    <p>This example <b>requires a web server</b>, because web browsers do not allow
+    web pages to load content (via XMLHttpRequest) when using the file:// protocol.</p>
+    <p>The page begins by requiring 'example/website', which loads website.js from
+    the example directory. That module requires 'example/greetings', which in turn
+    requires './messages', which is a relative import that resolves to 'example/messages'.
+
+  <p>The 'example/website' module also imports jQuery, to demonstrate 'shimming' an existing
+  global object into the module system as if it were a CommonJS module.</p>
+
+  <p><sup>1</sup> statement may not actually be true.</p>
+
+    <div id="hello"></div>
+    <script>
+
+      // provide standard jQuery as a CommonJS module.
+      cjs_shim('jQuery', $);
+      // require the website module on this page.
+      require('example/website');
+
+    </script>
+  </body>
+</html>
