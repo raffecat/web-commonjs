@@ -12,7 +12,7 @@ Dynamic loading
 ---------------
 
 Note: this feature **requires a web server**, because web browsers do not allow
-web pages to load content (via XMLHttpRequest) when using the file:// protocol.
+local pages to load content (via XMLHttpRequest) when using the file:// protocol.
 
 Include wcjs.js at the top of your web page...
 
@@ -24,13 +24,20 @@ Include wcjs.js at the top of your web page...
       require('example/website');
     </script>
 
-This feature is intended for development, **not for production***, since it
-uses a _blocking_ XMLHttpRequest to load modules. For production, package your
-modules as described below.
+This feature is intended for development, **not for production** - it uses a
+_blocking_ XMLHttpRequest to load modules. For production deployment, package
+your modules as described below.
 
 Note: the dynamic loader does not cache your scripts, since it is intended for
 development only. Your web browser _will_ cache your scripts if your web server
 tells it to; check the response headers!
+
+You can also inject a global object, such as jQuery's *$*, into the module
+system as follows:
+
+    cjs_shim('jQuery', $);
+
+Modules can now use jQuery via `require('jQuery')`.
 
 
 Packaged modules
@@ -61,13 +68,6 @@ system path with no extension.)
     <script type="text/x-commonjs" id="modulePath">
         ... paste the module source code here ...
     </script>
-
-You can also inject a global object, such as jQuery's *$*, into the module
-system as follows:
-
-    cjs_shim('jQuery', $);
-
-Modules can now use jQuery via `require('jQuery')`.
 
 Finally, your page must actually use one of the modules you've provided,
 otherwise nothing will happen.
