@@ -2,7 +2,7 @@ No-fuss CommonJS modules in your web pages
 ==========================================
 
 Embed [CommonJS][1] modules directly in your web pages, dynamically load modules
-from disk or server, or package your modules as a single minified script for
+from your web server, or package your modules as a single minified script for
 deployment.
 
 [1]: http://www.commonjs.org/specs/modules/1.0/ "CommonJS Modules 1.0 Specification"
