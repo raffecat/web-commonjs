@@ -1,5 +1,5 @@
 /* github.com/raffecat/web-commonjs v3 (MIT license) */
-var __cjs;__cjs=__cjs||{'$i':1};function cjs_provide(n,f){__cjs[n]={f:f}}
+var __cjs;__cjs=__cjs||{};function cjs_provide(n,f){__cjs[n]={f:f}}
 function require(n){var G=__cjs,p,q=[],i,s,m,o=G.$,S,t,x;s=n.charAt(0);
 if(s==='.'||s==='..')n=o+'/../'+n;p=n.split('/');for(i=0;i<p.length;
 i++)s=p[i],s&&s!=="."&&(s===".."?q.pop():q.push(s));n=q.join("/");m=
